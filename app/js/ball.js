@@ -5,7 +5,7 @@ var ball = {
     height : 16,
   aX : null,
   aY : null,
-  collisionCounter : 0,
+  counter : 0,
   directions : {
     TL : false, //top left
     TR : true, //top right
@@ -56,22 +56,54 @@ var ball = {
     }
   },
   changeDirection : function (object) {
-    this.collisionCounter++;
+    this.counter++;
     var way = this.directions;
       if(object === 'player'){
          if(way.BL){
            way.BL = false;
+           /*if(player.goLeft){
+             this.speedUp();
+             way.TL = true
+           } else if(player.goRight){
+             way.TR = true
+           } else{
+             way.TL = true;
+           }*/
            player.goRight ? way.TR = true : way.TL = true;
          } else if(way.BR){
            way.BR = false;
+           /*if(player.goRight){
+             this.speedUp();
+             way.TR = true;
+           } else if(player.goLeft){
+             way.TL = true
+           } else{
+             way.TR = true
+           }*/
            player.goLeft ? way.TL = true : way.TR = true;
          }
       } else if(object === 'robot'){
         if(way.TR){
           way.TR = false;
+          /*if(robot.goLeft){
+            way.BL = true
+          } else if(robot.goRight){
+            this.speedUp();
+            way.BR = true;
+          } else {
+            way.BR = true;
+          }*/
           robot.goLeft ? way.BL = true : way.BR = true;
         } else if(way.TL){
           way.TL = false;
+          /*if(robot.goRight){
+            way.BR = true;
+          } else if(robot.goLeft){
+            this.speedUp();
+            way.BL = true;
+          } else {
+            way.BL = true;
+          }*/
           robot.goRight ? way.BR = true : way.BL = true;
         }
       } else{
@@ -89,11 +121,13 @@ var ball = {
           way.BL = true;
         }
       }
-    this.speedUp();
+      var c = this.counter;
+    if(c === 5 || c === 10 || c === 15 || c === 20 || (c > 20 && this.aY < 20)) {
+      this.speedUp();
+    }
   },
   speedUp : function(){
-    if(this.collisionCounter === 5 || this.collisionCounter === 10)
       this.aX += Math.floor(Math.random() * 2);
-      this.aY += Math.floor(Math.random() * 2);
+      this.aY += Math.ceil(Math.random() * 3);
   }
 };

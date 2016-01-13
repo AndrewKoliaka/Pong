@@ -14,9 +14,11 @@ window.onload = function () {
 
 function downKey(e){
     if(e.keyCode === KEY_RIGHT){
+        player.goLeft = false;
         player.goRight = true;
     } else if(e.keyCode === KEY_LEFT){
         player.goLeft = true;
+        player.goRight = false;
     }
 }
 function upKey(){
@@ -61,8 +63,9 @@ function init(){
     robot.y = robot.height * 2;
     ball.x = Math.floor(Math.random() * (canvas.width - ball.width));
     ball.y = canvas.height / 2 - ball.height / 2;
-    ball.aX = ball.aY = 4;
-    ball.collisionCounter = 0;
+    ball.aX = 4;
+    ball.aY = 5;
+    ball.counter = 0;
     for(var d in ball.directions){
         if(ball.directions[d])
             ball.directions[d] = false;
