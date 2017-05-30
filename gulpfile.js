@@ -1,39 +1,50 @@
 const gulp = require('gulp');
-const browserSync = require('browser-sync').create();
+const connect = require('gulp-connect');
 const del = require('del');
 const concat = require('gulp-concat');
 const useref = require('gulp-useref');
 
+const pathTo = {
+    root: './',
+    dist: 'dist',
+    html: 'src/index.html',
+    css: 'src/*.css',
+    js: 'src/js/*.js'
+}
+
 gulp.task('serve', () => {
-    browserSync.init({
-        server: {
-            baseDir: './src'
-        }
+    connect.server({
+        port: 3000,
+        root: pathTo.root,
+        livereload: true
     });
 });
 
 gulp.task('html', () => {
-    gulp.src('src/index.html')
+    gulp.src(pathTo.html)
         .pipe(useref())
-        .pipe(gulp.dest('./'));
+        .pipe(gulp.dest(pathTo.root))
+        .pipe(connect.reload());
 });
 
 gulp.task('css', () => {
-    gulp.src('src/assets/*.css')
+    gulp.src(pathTo.css)
         .pipe(concat('styles.css'))
-        .pipe(gulp.dest('dist'));
+        .pipe(gulp.dest(pathTo.dist))
+        .pipe(connect.reload());
 });
 
 gulp.task('js', () => {
-    gulp.src('src/js/*.js')
+    gulp.src(pathTo.js)
         .pipe(concat('app.js'))
-        .pipe(gulp.dest('dist'));
+        .pipe(gulp.dest(pathTo.dist))
+        .pipe(connect.reload());
 });
 
 gulp.task('watch', () => {
-    gulp.watch('src/index.html').on('change', browserSync.reload);
-    gulp.watch('src/js/*.js').on('change', browserSync.reload);
-    gulp.watch('src/styles.css').on('change', browserSync.reload);
+    gulp.watch(pathTo.html, ['html'])
+    gulp.watch(pathTo.js, ['js']);
+    gulp.watch(pathTo.css, ['css']);
 });
 
 gulp.task('del', () => {
