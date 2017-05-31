@@ -1,4 +1,4 @@
-canvas{
+canvas {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -6,4 +6,9 @@ canvas{
     left: 0;
     margin: auto;
     border: thin solid black;
+    background: #fff;
+    background: linear-gradient(180deg, transparent, gray, transparent);
+    background-position: 50%;
+    background-repeat: repeat-x;
+    background-size: 1px auto;
 }
