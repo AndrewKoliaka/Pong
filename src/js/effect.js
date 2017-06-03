@@ -5,10 +5,13 @@ function Effect(type) {
     this.timer = null;
     this.acceleratedPlayer = null;
     this.ballSpeedBeforeAcceleration = null;
+    this.increasedPlayer = null;
 }
 
 // occurs after bonus box become opened
 Effect.prototype.resolve = function () {
+
+    game.effects.push(this);
 
     // set effect duration to 30s 
     this.timer = setTimeout(this.remove.bind(this), 30000);
@@ -26,29 +29,47 @@ Effect.prototype.resolve = function () {
             this.extraBall.setRandomDirection();
             view.register(this.extraBall);
             game.objectsToMove.push(this.extraBall);
-            console.log(game.objectsToMove);
             break;
         case bonusBoxType.MOVEMENT_SPEED:
-            this.acceleratedPlayer = ball.lastTouchPlayer;
-            if (this.acceleratedPlayer) {
+            if (ball.lastTouchPlayer) {
+                this.acceleratedPlayer = ball.lastTouchPlayer;
                 this.acceleratedPlayer.speed += 3;
+            }
+            break;
+        case bonusBoxType.BIG_PLAYER:
+            if (ball.lastTouchPlayer) {
+                this.increasedPlayer = ball.lastTouchPlayer;
+                this.increasedPlayer.radius += 10;
             }
             break;
     }
 }
 
+// removes applied effect
 Effect.prototype.remove = function () {
+
+    game.effects.removeElement(this);
+
     switch (this.type) {
         case bonusBoxType.FAST_BALL:
-            ball.speed = this.ballSpeedBeforeAcceleration;
+            if (this.ballSpeedBeforeAcceleration) {
+                ball.speed = this.ballSpeedBeforeAcceleration;
+            }
             break;
         case bonusBoxType.MORE_BALLS:
-            view.unRegister(this.extraBall);
-            game.objectsToMove.removeElement(this.extraBall);
+            if (this.extraBall) {
+                view.unRegister(this.extraBall);
+                game.objectsToMove.removeElement(this.extraBall);
+            }
             break;
         case bonusBoxType.MOVEMENT_SPEED:
             if (this.acceleratedPlayer) {
                 this.acceleratedPlayer.speed -= 3;
+            }
+            break;
+        case bonusBoxType.BIG_PLAYER:
+            if (this.increasedPlayer) {
+                this.increasedPlayer.radius -= 10;
             }
             break;
     }

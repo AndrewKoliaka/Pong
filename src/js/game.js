@@ -5,6 +5,7 @@
 var game = {
     state: null,
     bonusBoxes: [],
+    effects: [],
     objectsToMove: [],
 
     // method which calls recursively through all game life
@@ -16,7 +17,7 @@ var game = {
 
             // add bonus boxes only in rare cases
             // (when random number equals 500)
-            if (engine.getRandomNumber(1, 500) === 400 && this.bonusBoxes.length < 2) {
+            if (engine.getRandomNumber(1, 500) === 500 && this.bonusBoxes.length < 2) {
                 this.addBonusBox();
             }
 
@@ -40,6 +41,12 @@ var game = {
         this.state = gameState.FINISHED;
         view.drawScore(player1.score, player2.score);
         view.showPopup(popup.SCORE);
+        this.effects.forEach(function (el) {
+            el.remove();
+        });
+        this.bonusBoxes.forEach(function (el) {
+            el.remove();
+        });
         setTimeout(function () {
             view.hidePopup(popup.SCORE);
             self.start();
@@ -49,7 +56,7 @@ var game = {
     // create and add to view a new bonus box with random effect
     addBonusBox: function () {
         var type = null;
-        switch (engine.getRandomNumber(1, 3)) {
+        switch (engine.getRandomNumber(1, 4)) {
             case 1:
                 type = bonusBoxType.FAST_BALL;
                 break;
@@ -59,6 +66,8 @@ var game = {
             case 3:
                 type = bonusBoxType.MOVEMENT_SPEED;
                 break;
+            case 4:
+                type = bonusBoxType.BIG_PLAYER;
         }
         var bonusBox = new BonusBox(engine.getRandomNumber(45, canvas.width - 45), engine.getRandomNumber(45, canvas.height - 45), type);
         this.bonusBoxes.push(bonusBox);
@@ -122,12 +131,14 @@ var game = {
     start: function () {
         this.objectsToMove.length = 3;
         view.objects.length = 3;
-        this.bonusBoxes = [];
         this.state = gameState.PLAY;
+        this.effects = [];
+        this.bonusBoxes = [];
 
         player1.y = (canvas.height - player1.radius * 3);
         player2.y = player2.radius * 2;
         player2.speed = player1.speed = 3.5;
+        player1.radius = player2.radius = 25;
 
         ball.x = player1.x = player2.x = canvas.width / 2;
         ball.y = canvas.height / 2;

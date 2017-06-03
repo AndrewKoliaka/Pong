@@ -22,6 +22,8 @@ function BonusBox(x, y, type) {
         case bonusBoxType.MOVEMENT_SPEED:
             this.text = 'extra speed';
             break;
+        case bonusBoxType.BIG_PLAYER:
+            this.text = 'big player';
     }
 }
 

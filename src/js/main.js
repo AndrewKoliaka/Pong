@@ -46,7 +46,8 @@ var gameState = {
 var bonusBoxType = {
     MOVEMENT_SPEED: 'MOVEMENT_SPEED',
     FAST_BALL: 'FAST_BALL',
-    MORE_BALLS: 'MORE_BALLS'
+    MORE_BALLS: 'MORE_BALLS',
+    BIG_PLAYER: 'BIG_PLAYER'
 }
 
 var collisionObject = {

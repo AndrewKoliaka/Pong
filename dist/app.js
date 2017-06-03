@@ -5,6 +5,7 @@
 var game = {
     state: null,
     bonusBoxes: [],
+    effects: [],
     objectsToMove: [],
 
     // method which calls recursively through all game life
@@ -40,6 +41,12 @@ var game = {
         this.state = gameState.FINISHED;
         view.drawScore(player1.score, player2.score);
         view.showPopup(popup.SCORE);
+        this.effects.forEach(function (el) {
+            el.remove();
+        });
+        this.bonusBoxes.forEach(function (el) {
+            el.remove();
+        });
         setTimeout(function () {
             view.hidePopup(popup.SCORE);
             self.start();
@@ -49,7 +56,7 @@ var game = {
     // create and add to view a new bonus box with random effect
     addBonusBox: function () {
         var type = null;
-        switch (engine.getRandomNumber(1, 3)) {
+        switch (engine.getRandomNumber(1, 4)) {
             case 1:
                 type = bonusBoxType.FAST_BALL;
                 break;
@@ -59,6 +66,8 @@ var game = {
             case 3:
                 type = bonusBoxType.MOVEMENT_SPEED;
                 break;
+            case 4:
+                type = bonusBoxType.BIG_PLAYER;
         }
         var bonusBox = new BonusBox(engine.getRandomNumber(45, canvas.width - 45), engine.getRandomNumber(45, canvas.height - 45), type);
         this.bonusBoxes.push(bonusBox);
@@ -122,12 +131,14 @@ var game = {
     start: function () {
         this.objectsToMove.length = 3;
         view.objects.length = 3;
-        this.bonusBoxes = [];
         this.state = gameState.PLAY;
+        this.effects = [];
+        this.bonusBoxes = [];
 
         player1.y = (canvas.height - player1.radius * 3);
         player2.y = player2.radius * 2;
         player2.speed = player1.speed = 3.5;
+        player1.radius = player2.radius = 25;
 
         ball.x = player1.x = player2.x = canvas.width / 2;
         ball.y = canvas.height / 2;
@@ -204,7 +215,7 @@ var engine = {
 
     // return random number between min and max
     getRandomNumber(min, max) {
-        return Math.floor(Math.random() * max) + min;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 }
 // BonusBox class
@@ -231,6 +242,8 @@ function BonusBox(x, y, type) {
         case bonusBoxType.MOVEMENT_SPEED:
             this.text = 'extra speed';
             break;
+        case bonusBoxType.BIG_PLAYER:
+            this.text = 'big player';
     }
 }
 
@@ -257,10 +270,13 @@ function Effect(type) {
     this.timer = null;
     this.acceleratedPlayer = null;
     this.ballSpeedBeforeAcceleration = null;
+    this.increasedPlayer = null;
 }
 
 // occurs after bonus box become opened
 Effect.prototype.resolve = function () {
+
+    game.effects.push(this);
 
     // set effect duration to 30s 
     this.timer = setTimeout(this.remove.bind(this), 30000);
@@ -278,29 +294,47 @@ Effect.prototype.resolve = function () {
             this.extraBall.setRandomDirection();
             view.register(this.extraBall);
             game.objectsToMove.push(this.extraBall);
-            console.log(game.objectsToMove);
             break;
         case bonusBoxType.MOVEMENT_SPEED:
-            this.acceleratedPlayer = ball.lastTouchPlayer;
-            if (this.acceleratedPlayer) {
+            if (ball.lastTouchPlayer) {
+                this.acceleratedPlayer = ball.lastTouchPlayer;
                 this.acceleratedPlayer.speed += 3;
+            }
+            break;
+        case bonusBoxType.BIG_PLAYER:
+            if (ball.lastTouchPlayer) {
+                this.increasedPlayer = ball.lastTouchPlayer;
+                this.increasedPlayer.radius += 10;
             }
             break;
     }
 }
 
+// removes applied effect
 Effect.prototype.remove = function () {
+
+    game.effects.removeElement(this);
+
     switch (this.type) {
         case bonusBoxType.FAST_BALL:
-            ball.speed = this.ballSpeedBeforeAcceleration;
+            if (this.ballSpeedBeforeAcceleration) {
+                ball.speed = this.ballSpeedBeforeAcceleration;
+            }
             break;
         case bonusBoxType.MORE_BALLS:
-            view.unRegister(this.extraBall);
-            game.objectsToMove.removeElement(this.extraBall);
+            if (this.extraBall) {
+                view.unRegister(this.extraBall);
+                game.objectsToMove.removeElement(this.extraBall);
+            }
             break;
         case bonusBoxType.MOVEMENT_SPEED:
             if (this.acceleratedPlayer) {
                 this.acceleratedPlayer.speed -= 3;
+            }
+            break;
+        case bonusBoxType.BIG_PLAYER:
+            if (this.increasedPlayer) {
+                this.increasedPlayer.radius -= 10;
             }
             break;
     }
@@ -622,7 +656,8 @@ var gameState = {
 var bonusBoxType = {
     MOVEMENT_SPEED: 'MOVEMENT_SPEED',
     FAST_BALL: 'FAST_BALL',
-    MORE_BALLS: 'MORE_BALLS'
+    MORE_BALLS: 'MORE_BALLS',
+    BIG_PLAYER: 'BIG_PLAYER'
 }
 
 var collisionObject = {
