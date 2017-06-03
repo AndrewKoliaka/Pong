@@ -17,9 +17,16 @@ var view = {
     },
     drawObjects: function () {
         this.clearCanvas();
+        this.drawCenterLine();
         this.objects.forEach(function (el) {
             this.drawObject(el);
         }, this);
+    },
+    drawCenterLine: function () {
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height / 2);
+        ctx.lineTo(canvas.width, canvas.height / 2);
+        ctx.stroke();
     },
     drawBonus: function (bonus) {
         ctx.beginPath();

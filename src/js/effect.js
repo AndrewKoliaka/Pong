@@ -14,12 +14,8 @@ Effect.prototype.resolve = function () {
     this.timer = setTimeout(this.remove.bind(this), 30000);
     switch (this.type) {
         case bonusBoxType.FAST_BALL:
-            this.ballSpeedBeforeAcceleration = {
-                aX: ball.aX,
-                aY: ball.aY
-            }
-            ball.aX += 2;
-            ball.aY += 2;
+            this.ballSpeedBeforeAcceleration = ball.speed;
+            ball.speed += 2;
             break;
         case bonusBoxType.MORE_BALLS:
             this.extraBall = new Ball({
@@ -44,8 +40,7 @@ Effect.prototype.resolve = function () {
 Effect.prototype.remove = function () {
     switch (this.type) {
         case bonusBoxType.FAST_BALL:
-            ball.aX = this.ballSpeedBeforeAcceleration.aX;
-            ball.aY = this.ballSpeedBeforeAcceleration.aY;
+            ball.speed = this.ballSpeedBeforeAcceleration;
             break;
         case bonusBoxType.MORE_BALLS:
             view.unRegister(this.extraBall);

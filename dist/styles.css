@@ -12,27 +12,18 @@ canvas {
     left: 0;
     margin: auto;
     border: thin solid black;
-    background: linear-gradient(180deg, transparent, gray, transparent);
     background-color: whitesmoke;
-    background-position: 50%;
-    background-repeat: repeat-x;
-    background-size: 1px auto;
     z-index: 1;
 }
 
 .popup {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    width: 250px;
+    height: 250px;
+    margin: auto;
     background-color: white;
     padding: 10px;
     border: thin solid gray;
     box-shadow: 3px 3px 3px gray;
-    width: 250px;
-    height: 250px;
-    margin: auto;
     z-index: 9999;
     display: table;
 }
@@ -72,4 +63,11 @@ canvas {
 
 .inline {
     display: inline-block;
+}
+
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

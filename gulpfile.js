@@ -4,6 +4,7 @@ const del = require('del');
 const concat = require('gulp-concat');
 const order = require('gulp-order');
 const useref = require('gulp-useref');
+const autoprefixer = require('gulp-autoprefixer');
 
 const pathTo = {
     root: './',
@@ -33,6 +34,7 @@ gulp.task('html', () => {
 gulp.task('css', () => {
     gulp.src(pathTo.css)
         .pipe(concat('styles.css'))
+        .pipe(autoprefixer())
         .pipe(gulp.dest(pathTo.dist))
         .pipe(connect.reload());
 });
@@ -76,4 +78,4 @@ gulp.task('del', () => {
 });
 
 gulp.task('default', ['serve', 'watch']);
-gulp.task('build', ['html', 'css', 'js', 'images', 'libs']);
+gulp.task('build', ['del', 'html', 'css', 'js', 'images', 'libs']);

@@ -16,7 +16,7 @@ var game = {
 
             // add bonus boxes only in rare cases
             // (when random number equals 500)
-            if (engine.getRandomNumber(1, 500) === 400 && this.bonusBoxes.length < 2) {
+            if (engine.getRandomNumber(1, 500) === 500 && this.bonusBoxes.length < 2) {
                 this.addBonusBox();
             }
 
@@ -266,12 +266,8 @@ Effect.prototype.resolve = function () {
     this.timer = setTimeout(this.remove.bind(this), 30000);
     switch (this.type) {
         case bonusBoxType.FAST_BALL:
-            this.ballSpeedBeforeAcceleration = {
-                aX: ball.aX,
-                aY: ball.aY
-            }
-            ball.aX += 2;
-            ball.aY += 2;
+            this.ballSpeedBeforeAcceleration = ball.speed;
+            ball.speed += 2;
             break;
         case bonusBoxType.MORE_BALLS:
             this.extraBall = new Ball({
@@ -296,8 +292,7 @@ Effect.prototype.resolve = function () {
 Effect.prototype.remove = function () {
     switch (this.type) {
         case bonusBoxType.FAST_BALL:
-            ball.aX = this.ballSpeedBeforeAcceleration.aX;
-            ball.aY = this.ballSpeedBeforeAcceleration.aY;
+            ball.speed = this.ballSpeedBeforeAcceleration;
             break;
         case bonusBoxType.MORE_BALLS:
             view.unRegister(this.extraBall);
@@ -328,21 +323,21 @@ Player.prototype = Object.create(GameEntity.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.move = function () {
-    if (this.goLeft && this.x - this.radius > 0) {
+    if (this.goLeft && this.x - this.radius - this.speed >= 0) {
         this.x -= this.speed;
     }
-    if (this.goRight && this.x + this.radius < canvas.width) {
+    if (this.goRight && this.x + this.radius + this.speed <= canvas.width) {
         this.x += this.speed;
     }
     if (this.goUp) {
-        if ((this.side === 'top' && this.y - this.radius > 0) ||
-            (this.side === 'bottom' && this.y - this.radius > canvas.height / 2)) {
+        if ((this.side === 'top' && this.y - this.radius - this.speed >= 0) ||
+            (this.side === 'bottom' && this.y - this.radius - this.speed >= canvas.height / 2)) {
             this.y -= this.speed;
         }
     }
     if (this.goDown) {
-        if ((this.side === 'top' && this.y + this.radius < canvas.height / 2) ||
-            (this.side === 'bottom' && this.y + this.radius < canvas.height)) {
+        if ((this.side === 'top' && this.y + this.radius + this.speed <= canvas.height / 2) ||
+            (this.side === 'bottom' && this.y + this.radius + this.speed <= canvas.height)) {
             this.y += this.speed;
         }
     }
@@ -394,9 +389,16 @@ var view = {
     },
     drawObjects: function () {
         this.clearCanvas();
+        this.drawCenterLine();
         this.objects.forEach(function (el) {
             this.drawObject(el);
         }, this);
+    },
+    drawCenterLine: function () {
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height / 2);
+        ctx.lineTo(canvas.width, canvas.height / 2);
+        ctx.stroke();
     },
     drawBonus: function (bonus) {
         ctx.beginPath();
