@@ -1,0 +1,16 @@
+{
+    "rules": {
+        "no-duplicate-case": 2,
+        "no-empty": 2,
+        "no-extra-semi": 1,
+        "no-unreachable": 1,
+        "curly": [2, "all"],
+        "eqeqeq": [2, "smart"],
+        "no-invalid-this": 2,
+        "no-proto": 2,
+        "no-void": 2,
+        "no-with": 2,
+        "strict": [2, "global"],
+        "quotes": [1, "single", "avoid-escape"]
+    }
+}
