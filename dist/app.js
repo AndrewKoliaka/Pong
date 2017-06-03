@@ -277,12 +277,12 @@ Effect.prototype.resolve = function () {
             this.extraBall = new Ball({
                 x: canvas.width / 2,
                 y: canvas.height / 2,
-                aX: ball.aX,
-                aY: ball.aY
+                speed: 3
             });
             this.extraBall.setRandomDirection();
             view.register(this.extraBall);
             game.objectsToMove.push(this.extraBall);
+            console.log(game.objectsToMove);
             break;
         case bonusBoxType.MOVEMENT_SPEED:
             this.acceleratedPlayer = ball.lastTouchPlayer;

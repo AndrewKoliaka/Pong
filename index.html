@@ -5,17 +5,21 @@
     <meta charset="UTF-8">
     <title>Tennis multiplayer</title>
     <link rel="stylesheet" href="dist/styles.css">
-    <link rel="stylesheet" href="./src/libs/animate.css/animate.min.css">
+
+    <link rel="stylesheet" href="dist/libs/animate.min.css">
 </head>
 
 <body>
     <div id="score-table" class="align-center">
-        <h1>Player1: <span class="score-player1">0</span></h1>
-        <h1>Player2: <span class="score-player2">0</span></h1>
-        <div class="dashboard">
-            <button id="pause-btn">Pause</button>
-            <button id="about-btn">About</button>
-            <button id="reset-btn">Reset</button>
+        <img class="align-left inline" height="130" src="./src/images/air-hockey.png" alt="air-hockey">
+        <div class="inline">
+            <h1>Player1: <span class="score-player1">0</span></h1>
+            <h1>Player2: <span class="score-player2">0</span></h1>
+            <div class="dashboard">
+                <button id="pause-btn">Pause</button>
+                <button id="about-btn">About</button>
+                <button id="reset-btn">Reset</button>
+            </div>
         </div>
     </div>
     <div id="pause-popup" class="popup none animated fadeIn">

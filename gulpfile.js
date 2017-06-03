@@ -10,7 +10,9 @@ const pathTo = {
     dist: 'dist',
     html: 'src/index.html',
     css: 'src/*.css',
-    js: 'src/js/*.js'
+    js: 'src/js/*.js',
+    images: 'src/images/*',
+    libs: 'src/libs/*'
 }
 
 gulp.task('serve', () => {
@@ -35,6 +37,16 @@ gulp.task('css', () => {
         .pipe(connect.reload());
 });
 
+gulp.task('images', () => {
+    gulp.src(pathTo.images)
+        .pipe(gulp.dest(pathTo.dist + '/images'));
+});
+
+gulp.task('libs', () => {
+    gulp.src(pathTo.libs)
+        .pipe(gulp.dest(pathTo.dist + '/libs'));
+});
+
 gulp.task('js', () => {
     gulp.src(pathTo.js)
         .pipe(order([
@@ -55,7 +67,7 @@ gulp.task('js', () => {
 
 gulp.task('watch', () => {
     gulp.watch(pathTo.html, ['html'])
-    gulp.watch(pathTo.js, ['build']);
+    gulp.watch(pathTo.js, ['js']);
     gulp.watch(pathTo.css, ['css']);
 });
 
@@ -64,4 +76,4 @@ gulp.task('del', () => {
 });
 
 gulp.task('default', ['serve', 'watch']);
-gulp.task('build', ['html', 'css', 'js']);
+gulp.task('build', ['html', 'css', 'js', 'images', 'libs']);

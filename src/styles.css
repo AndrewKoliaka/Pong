@@ -1,5 +1,7 @@
 body {
     font-family: sans-serif;
+    background-image: url('images/bg.png');
+    background-repeat: repeat;
 }
 
 canvas {
@@ -10,8 +12,8 @@ canvas {
     left: 0;
     margin: auto;
     border: thin solid black;
-    background: #fff;
     background: linear-gradient(180deg, transparent, gray, transparent);
+    background-color: whitesmoke;
     background-position: 50%;
     background-repeat: repeat-x;
     background-size: 1px auto;
@@ -66,4 +68,8 @@ canvas {
 
 .flex {
     display: flex;
+}
+
+.inline {
+    display: inline-block;
 }
