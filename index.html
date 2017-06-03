@@ -3,17 +3,57 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="author" content="Andrew Koliaka">
-    <title>Tennis</title>
+    <title>Tennis multiplayer</title>
     <link rel="stylesheet" href="dist/styles.css">
+    <link rel="stylesheet" href="./src/libs/animate.css/animate.min.css">
 </head>
 
 <body>
-    <div id="score-table">
-        <h1>Player1: <span id="score-player1">0</span></h1>
-        <h1>Player2: <span id="score-player2">0</span></h1>
+    <div id="score-table" class="align-center">
+        <h1>Player1: <span class="score-player1">0</span></h1>
+        <h1>Player2: <span class="score-player2">0</span></h1>
+        <div class="dashboard">
+            <button id="pause-btn">Pause</button>
+            <button id="about-btn">About</button>
+            <button id="reset-btn">Reset</button>
+        </div>
     </div>
-    <canvas width="400" height="450"></canvas>
+    <div id="pause-popup" class="popup none animated fadeIn">
+        <div class="wrapper align-center">
+            <button id="resume-btn">Resume</button>
+        </div>
+    </div>
+    <div id="about-popup" class="popup none animated fadeIn">
+        <div class="wrapper">
+            <h2 class="align-center">About</h2>
+            <p>
+                The goal of the game is to kick as many balls as possible for the opposing side line of the opponent. In the game there are
+                3 types of bonuses:
+                <ul class="align-left">
+                    <li>acceleration of the ball</li>
+                    <li>acceleration of the platform</li>
+                    <li>adding one ball</li>
+                </ul>
+                <small>(the bonus is activated when the ball hits it)</small>
+                <br>
+                <br> Player1 manage by AWSD keys<br> Player2 manage by arrow keys<br> SPACE: pause
+            </p>
+            <div class="align-center">
+                <button id="close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+    <div id="score-popup" class="popup none animated fadeIn">
+        <div class="wrapper">
+            <h1 class="score-player1">0</h1>
+            <h1> : </h1>
+            <h1 class="score-player2">0</h1>
+        </div>
+    </div>
+
+    <canvas width="500" height="550">
+        Sorry, your browser does not support html5 canvas.
+    </canvas>
     <script src="dist/app.js"></script>
 </body>
 

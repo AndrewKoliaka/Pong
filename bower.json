@@ -1,0 +1,20 @@
+{
+  "name": "tennis",
+  "description": "",
+  "main": "index.html",
+  "authors": [
+    "AndrewKoliaka"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/AndrewKoliaka/Pong",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "animate.css": "animate-css#^3.5.2"
+  }
+}

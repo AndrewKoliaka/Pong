@@ -1,146 +1,150 @@
+// game object
+// it is controller of the game
+// program starts from init method
+
 var game = {
-    gameFinished: false,
     state: null,
-    checkForClash: function () {
+    bonusBoxes: [],
+    objectsToMove: [],
 
-        function isBallInsidePlayer(playerObj) {
-            var FLEXURE = 25;
-            return Math.pow((playerObj.x - ball.x), 2) + Math.pow((playerObj.y - ball.y), 2) <=
-                Math.pow(playerObj.radius, 2) + Math.pow(ball.radius, 2) + Math.pow(FLEXURE, 2);
-        }
-        // console.log(ball.dirs);
-        if (ball.y + ball.radius > canvas.height) {
-            player2.score++;
-            // ball.changeDirection({});
-            this.gameOver();
-            console.log('top player win');
-            return;
-        } else if (ball.y - ball.radius < 0) {
-            player1.score++;
-            // ball.changeDirection({});
-            this.gameOver();
-            console.log('bottom player win');
-            return;
-        }
-
-        if (isBallInsidePlayer(player1)) {
-            ball.changeDirection(player1);
-        } else if (isBallInsidePlayer(player2)) {
-            ball.changeDirection(player2);
-        } else if (ball.x + ball.radius >= canvas.width || ball.x - ball.radius <= 0) {
-            console.log('clash with border');
-            ball.changeDirection({});
-        }
-
-        // if (ball.y + ball.height > player.y + player.height || ball.y < player2.y - player2.height)
-        //     return;
-        // if (ball.x + ball.width >= canvas.width || ball.x <= 0) {
-        //     ball.changeDirection({});
-        // } else if (ball.y + ball.height + ball.aY / 2 >= player.y && ball.x + ball.width > player.x && ball.x < player.x + player.width) {
-        //     ball.changeDirection(player);
-        // } else if (ball.y - ball.aY / 2 <= player2.y + player2.height && ball.x + ball.width > player2.x && ball.x < player2.x + player2.width) {
-        //     ball.changeDirection(player2);
-        // }
-    },
-
+    // method which calls recursively through all game life
     loop: function () {
-        if (this.gameFinished || this.state === 'stopped') {
-            return;
-        }
-        player1.move();
-        player2.move();
-        ball.move();
 
-        this.checkForClash();
-        window.requestAnimationFrame(this.loop.bind(this));
+        // check if any popus visible on screen won't move anything
+        this.state = view.isPopupsOnScreen() ? gameState.PAUSE : gameState.PLAY;
+        if (this.state === gameState.PLAY) {
+
+            // add bonus boxes only in rare cases
+            // (when random number equals 500)
+            if (engine.getRandomNumber(1, 500) === 400 && this.bonusBoxes.length < 2) {
+                this.addBonusBox();
+            }
+
+            this.objectsToMove.forEach(function (el) {
+                el.move();
+
+                if (el instanceof Ball) {
+                    el.handleCollision();
+                }
+            });
+        }
+
+        if (this.state !== gameState.FINISHED) {
+            window.requestAnimationFrame(this.loop.bind(this));
+        }
     },
+
+    // finishe game and start a new one in 2 seconds
     gameOver: function () {
-        this.gameFinished = true;
-        setTimeout(this.start.bind(this), 2000);
+        var self = this;
+        this.state = gameState.FINISHED;
         view.drawScore(player1.score, player2.score);
+        view.showPopup(popup.SCORE);
+        setTimeout(function () {
+            view.hidePopup(popup.SCORE);
+            self.start();
+        }, 2000);
     },
+
+    // create and add to view a new bonus box with random effect
+    addBonusBox: function () {
+        var type = null;
+        switch (engine.getRandomNumber(1, 3)) {
+            case 1:
+                type = bonusBoxType.FAST_BALL;
+                break;
+            case 2:
+                type = bonusBoxType.MORE_BALLS;
+                break;
+            case 3:
+                type = bonusBoxType.MOVEMENT_SPEED;
+                break;
+        }
+        var bonusBox = new BonusBox(engine.getRandomNumber(45, canvas.width - 45), engine.getRandomNumber(45, canvas.height - 45), type);
+        this.bonusBoxes.push(bonusBox);
+        view.register(bonusBox);
+    },
+
+    // calls only on start
+    // init all game objects set base properties
     init: function () {
+        var self = this;
+
         player1 = new Player({
-            color: 'red',
+            color: color.PLAYER_1,
             side: 'bottom',
             radius: 25
         });
         player2 = new Player({
-            color: 'green',
+            color: color.PLAYER_2,
             side: 'top',
             radius: 25
         });
         ball = new Ball({
-            color: 'black'
+            color: color.BALL
         });
+
+        this.objectsToMove.push(player1, player2, ball)
         canvas = document.getElementsByTagName('canvas')[0];
         ctx = canvas.getContext('2d');
-        ctx.font = '15px Arial';
+        ctx.font = '20px Arial';
+        ctx.textAlign = 'center';
+
+        // event listeners
         window.addEventListener('keydown', keyPressed, false);
         window.addEventListener('keyup', keyUpped, false);
+
+        document.getElementById('close-btn').addEventListener('click', function () {
+            view.hidePopup(popup.ABOUT);
+        }, false);
+
+        document.getElementById('resume-btn').addEventListener('click', function () {
+            view.togglePopup(popup.PAUSE);
+        }, false);
+
+        document.getElementById('about-btn').addEventListener('click', function () {
+            view.togglePopup(popup.ABOUT);
+        }, false);
+
+        document.getElementById('pause-btn').addEventListener('click', function () {
+            view.showPopup(popup.PAUSE);
+        }, false);
+
+        document.getElementById('reset-btn').addEventListener('click', function () {
+            self.resetScore();
+            view.resetScore();
+        }, false);
+
         this.start();
     },
+
+    // start a new game session
     start: function () {
-        this.gameFinished = false;
-        this.state = 'play'
+        this.objectsToMove.length = 3;
+        view.objects.length = 3;
+        this.bonusBoxes = [];
+        this.state = gameState.PLAY;
+
         player1.y = (canvas.height - player1.radius * 3);
+        player2.y = player2.radius * 2;
+        player2.speed = player1.speed = 3.5;
 
-
-        player2.y = player2.radius * 2
-
-        // player.x = (canvas.width - player.width) / 2;
-        // player.y = (canvas.height - player.height * 3);
-        // player2.x = (canvas.width - player2.width) / 2;
-        // player2.y = player2.height * 2;
-        // player.goRight = false;
-        // player.goLeft = false;
-        // player2.goRight = false;
-        // player2.goLeft = false;
         ball.x = player1.x = player2.x = canvas.width / 2;
         ball.y = canvas.height / 2;
-        ball.aX = 1;
-        ball.aY = 1;
-        ball.speedCounter = 0;
-        ball.setDirection(direction.DOWN);
-        // ball.setDirection(direction.RIGHT);
-
-        // ball = new Ball({
-        //     x: Math.floor(Math.random() * (canvas.width - 16)),
-        //     y: canvas.height / 2 - 16 / 2,
-        //     aX: 4,
-        //     aY: 5,
-        //     speedCounter: 0,
-        //     direction: 'TR'
-        // });
-        // ball.x = Math.floor(Math.random() * (canvas.width - ball.width));
-        // ball.y = canvas.height / 2 - ball.height / 2;
-        // ball.aX = 4;
-        // ball.aY = 5;
-        // ball.speedCounter = 0;
-        // for (var d in ball.dirs) {
-        //     ball.dirs[d] = false;
-        // }
-        // ball.dirs.TR = true;
-
-        // view.clearRect(0, 0, canvas.width, canvas.height);
-
-        // view.drawObject(player1);
-        // view.drawObject(player2);
-        // view.drawObject(ball);
+        ball.aX = ball.aY = 2;
+        ball.speed = 3;
+        ball.setRandomDirection();
 
         view.register(player1);
         view.register(player2);
         view.register(ball);
         view.drawObjects();
         view.drawScore(player1.score, player2.score);
-        // view.clearRect(0, 0, canvas.width, canvas.height);
-        // view.drawRect(player.x, player.y, player.width, player.height);
-        // view.drawRect(player2.x, player2.y, player2.width, player2.height);
-        // view.drawRect(ball.x, ball.y, ball.width, ball.height);
-        // view.drawScore(player.score, player2.score);
-        window.requestAnimationFrame(this.loop.bind(this));
+
+        this.loop();
     },
-    stop: function () {
-        this.state = 'stopped';
+    resetScore: function () {
+        player1.score = 0;
+        player2.score = 0;
     }
 }

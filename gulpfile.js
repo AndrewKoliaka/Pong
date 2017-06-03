@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const connect = require('gulp-connect');
 const del = require('del');
 const concat = require('gulp-concat');
+const order = require('gulp-order');
 const useref = require('gulp-useref');
 
 const pathTo = {
@@ -36,6 +37,17 @@ gulp.task('css', () => {
 
 gulp.task('js', () => {
     gulp.src(pathTo.js)
+        .pipe(order([
+            'src/js/game.js',
+            'src/js/gameEntity.js',
+            'src/js/engine.js',
+            'src/js/ball.js',
+            'src/js/player.js',
+            'src/js/effect.js',
+            'src/js/bonusBox.js',
+            'src/js/view.js',
+            'src/js/main.js',
+        ]))
         .pipe(concat('app.js'))
         .pipe(gulp.dest(pathTo.dist))
         .pipe(connect.reload());
@@ -43,7 +55,7 @@ gulp.task('js', () => {
 
 gulp.task('watch', () => {
     gulp.watch(pathTo.html, ['html'])
-    gulp.watch(pathTo.js, ['js']);
+    gulp.watch(pathTo.js, ['build']);
     gulp.watch(pathTo.css, ['css']);
 });
 

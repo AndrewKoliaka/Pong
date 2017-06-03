@@ -1,214 +1,117 @@
+// Ball class
 function Ball(props) {
     props = props || {};
     GameEntity.apply(this, arguments);
-
     this.aX = props.aX || 0;
     this.aY = props.aY || 0;
-    this.speedCounter = props.speedCounter || 0;
-
-    props.direction ? this.setDirection(props.direction) : this.setDirection('TR')
+    this.lastTouchPlayer = null;
 }
 
+// inherited from GameEntity class
 Ball.prototype = Object.create(GameEntity.prototype);
 Ball.prototype.constructor = Ball;
 
+// move the ball
 Ball.prototype.move = function () {
-    if (this.goLeft) {
-        this.x -= this.aX;
-    }
-    if (this.goRight) {
-        this.x += this.aX;
-    }
-    if (this.goUp) {
-        this.y -= this.aY;
-    }
-    if (this.goDown) {
-        this.y += this.aY;
+    this.x += this.aX;
+    this.y += this.aY;
+}
+
+// set direction of ball based on random angle
+Ball.prototype.setRandomDirection = function () {
+    var randomAngle = engine.getRandomNumber(1, 360);
+    this.aX = engine.getBallAX(this.speed, randomAngle);
+    this.aY = engine.getBallAY(this.speed, randomAngle);
+}
+
+// this method is caused during each cycle passage
+// handles all possible collisions with ball
+Ball.prototype.handleCollision = function () {
+    var clashedObject = this.getCollisionObject();
+
+    switch (clashedObject.type) {
+        case collisionObject.BORDER_RIGHT:
+            this.aX = -this.aX;
+            this.x = canvas.width - this.radius;
+            break;
+        case collisionObject.BORDER_LEFT:
+            this.aX = -this.aX;
+            this.x = this.radius;
+            break;
+        case collisionObject.BONUS_BOX:
+            clashedObject.payload.open();
+            break;
+        case collisionObject.PLAYER:
+            var player = clashedObject.payload;
+            this.lastTouchPlayer = player;
+            var angle = engine.getCollisionAngle(this, player);
+            this.aX = engine.getBallAX(this.speed, angle);
+            this.aY = engine.getBallAY(this.speed, angle);
+            if (player.isMoving()) {
+                this.speedUp();
+            }
+            break;
+        case collisionObject.OPPONENT_SIDE:
+            clashedObject.payload === player1 ? player1.score++ : player2.score++;
+            game.gameOver();
+            break;
     }
 }
 
-Ball.prototype.changeDirection = function (clashObject) {
-    this.speedCounter++;
-    switch (clashObject) {
-        case player1: // bottom player
-            if (player1.isMoving) {
-                this.speedUp();
-            }
-            if (this.x > player1.x && this.y < player1.y) {
-                if (Math.abs(player1.x - this.x) <= 5 && player1.goUp) {
-                    this.setDirectionSingle(direction.UP);
-                } else {
-                    this.setDirection(direction.UP);
-                    this.setDirection(direction.RIGHT);
-                }
-            } else if (this.x < player1.x && this.y < player1.y) {
-                if (Math.abs(player1.x - this.x) <= 5 && player1.goUp) {
-                    this.setDirectionSingle(direction.UP);
-                } else {
-                    this.setDirection(direction.UP);
-                    this.setDirection(direction.LEFT);
-                }
-            } else if (this.x < player1.x && this.y > player1.y) {
-                if (Math.abs(player1.y - this.y) <= 5 && player1.goLeft) {
-                    this.setDirectionSingle(direction.LEFT);
-                } else {
-                    this.setDirection(direction.DOWN);
-                    this.setDirection(direction.LEFT);
-                }
-            } else {
-                if (Math.abs(player1.y - this.y) <= 5 && player1.goRight) {
-                    this.setDirectionSingle(direction.RIGHT);
-                } else {
-                    this.setDirection(direction.DOWN);
-                    this.setDirection(direction.RIGHT);
-                }
-            }
-            break;
-        case player2: // top player
-            if (player2.isMoving) {
-                this.speedUp();
-            }
-            if (this.x > player2.x && this.y < player2.y) {
-                if (Math.abs(player2.y - this.y) <= 5 && player2.goRight) {
-                    this.setDirectionSingle(direction.RIGHT);
-                } else {
-                    this.setDirection(direction.UP);
-                    this.setDirection(direction.RIGHT);
-                }
-            } else if (this.x < player2.x && this.y < player2.y) {
-                if (Math.abs(player2.y - this.y) <= 5 && player2.goLeft) {
-                    this.setDirectionSingle(direction.LEFT);
-                } else {
-                    this.setDirection(direction.UP);
-                    this.setDirection(direction.LEFT);
-                }
-            } else if (this.x < player2.x && this.y > player2.y) {
-                if (Math.abs(player2.x - this.x) <= 5 && player2.goDown) {
-                    this.setDirectionSingle(direction.DOWN);
-                } else {
-                    this.setDirection(direction.DOWN);
-                    this.setDirection(direction.LEFT);
-                }
-            } else {
-                if (Math.abs(player2.x - this.x) <= 5 && player2.goDown) {
-                    this.setDirectionSingle(direction.DOWN);
-                } else {
-                    this.setDirection(direction.DOWN);
-                    this.setDirection(direction.RIGHT);
-                }
-            }
+// check if ball got clash with something
+// and if true detect it collision object and type
+Ball.prototype.getCollisionObject = function () {
+    var type = null, // collision type
+        payload = null; // collision object
 
-            break;
-        default: // border
-            if (this.goUp) {
-                if (this.goLeft) {
-                    this.setDirection(direction.RIGHT);
-                } else {
-                    this.setDirection(direction.LEFT);
-                }
-            } else if (this.goDown) {
-                if (this.goLeft) {
-                    this.setDirection(direction.RIGHT);
-                } else {
-                    this.setDirection(direction.LEFT);
-                }
-            } else if (this.goRight) {
-                this.setDirectionSingle(direction.LEFT);
-            } else {
-                this.setDirectionSingle(direction.RIGHT);
-            }
-            break;
+    var self = this;
+
+    // detects if ball is inside of circle
+    function isBallInsideCircle(circleObject) {
+        var FLEXURE = 25;
+        return Math.pow((circleObject.x - this.x), 2) + Math.pow((circleObject.y - this.y), 2) <=
+            Math.pow(circleObject.radius, 2) + Math.pow(this.radius, 2) + Math.pow(FLEXURE, 2);
     }
 
-    // var c = this.speedCounter;
-    // if (c === 5 || c === 10 || c === 15 || c === 20 || (c > 20 && this.aY < 20)) {
-    //     this.speedUp();
-    // }
+    // if opponet side (goal)
+    if (this.y > canvas.height || this.y < 0) {
+        type = collisionObject.OPPONENT_SIDE;
+        payload = this.y < 0 ? player1 : player2;
+
+        // if player1 platform
+    } else if (isBallInsideCircle.call(this, player1)) {
+        type = collisionObject.PLAYER;
+        payload = player1;
+
+        // if player2 platform
+    } else if (isBallInsideCircle.call(this, player2)) {
+        type = collisionObject.PLAYER;
+        payload = player2;
+
+        // if bonus box
+    } else if (game.bonusBoxes.some(function (el) {
+            return isBallInsideCircle.call(self, el);
+        })) {
+        type = collisionObject.BONUS_BOX;
+        payload = game.bonusBoxes.find(function (el) {
+            return isBallInsideCircle.call(self, el);
+        })
+
+        // if right border
+    } else if (this.x + this.radius >= canvas.width) {
+        type = collisionObject.BORDER_RIGHT;
+
+        // if left border
+    } else if (this.x - this.radius <= 0) {
+        type = collisionObject.BORDER_LEFT;
+    }
+
+    return {
+        type: type,
+        payload: payload
+    }
 }
 
 Ball.prototype.speedUp = function () {
-    this.aX += Math.floor(Math.random() * 2);
-    this.aY += Math.ceil(Math.random() * 2);
+    this.speed += 0.3;
 }
-
-// var ball = {
-//     x: null,
-//     y: null,
-//     width: 16,
-//     height: 16,
-//     aX: null,
-//     aY: null,
-//     speedCounter: 0,
-//     dirs: {
-//         TL: false, //top left
-//         TR: true, //top right
-//         BR: false, //bottom right
-//         BL: false //bottom left
-//     },
-//     move: function () {
-//         game.checkForClash();
-//         view.clearRect(this.x, this.y, this.width, this.height);
-//         if (this.dirs.TL) {
-//             this.x -= this.aX;
-//             this.y -= this.aY;
-//         } else if (this.dirs.TR) {
-//             this.x += this.aX;
-//             this.y -= this.aY;
-//         } else if (this.dirs.BR) {
-//             this.x += this.aX;
-//             this.y += this.aY;
-//         } else if (this.dirs.BL) {
-//             this.x -= this.aX;
-//             this.y += this.aY;
-//         }
-//         view.drawRect(this.x, this.y, this.width, this.height);
-//     },
-
-//     changeDirection: function (clashObject) {
-//         this.speedCounter++;
-//         switch (clashObject) {
-//             case player:
-//                 if (this.dirs.BL) {
-//                     this.dirs.BL = false;
-//                     player.goRight ? this.dirs.TR = true : this.dirs.TL = true;
-//                 } else if (this.dirs.BR) {
-//                     this.dirs.BR = false;
-//                     player.goLeft ? this.dirs.TL = true : this.dirs.TR = true;
-//                 };
-//                 break;
-//             case ai:
-//                 if (this.dirs.TR) {
-//                     this.dirs.TR = false;
-//                     ai.goLeft ? this.dirs.BL = true : this.dirs.BR = true;
-//                 } else if (this.dirs.TL) {
-//                     this.dirs.TL = false;
-//                     ai.goRight ? this.dirs.BR = true : this.dirs.BL = true;
-//                 };
-//                 break;
-//             default:
-//                 if (this.dirs.TL) {
-//                     this.dirs.TL = false;
-//                     this.dirs.TR = true;
-//                 } else if (this.dirs.BL) {
-//                     this.dirs.BL = false;
-//                     this.dirs.BR = true;
-//                 } else if (this.dirs.TR) {
-//                     this.dirs.TR = false;
-//                     this.dirs.TL = true;
-//                 } else {
-//                     this.dirs.BR = false;
-//                     this.dirs.BL = true;
-//                 };
-//                 break;
-//         }
-
-//         var c = this.speedCounter;
-//         if (c === 5 || c === 10 || c === 15 || c === 20 || (c > 20 && this.aY < 20)) {
-//             this.speedUp();
-//         }
-//     },
-//     speedUp: function () {
-//         this.aX += Math.floor(Math.random() * 2);
-//         this.aY += Math.ceil(Math.random() * 3);
-//     }
-// };

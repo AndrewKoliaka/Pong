@@ -1,38 +1,80 @@
+var player1Scores = Array.prototype.slice.call(document.getElementsByClassName('score-player1')),
+    player2Scores = Array.prototype.slice.call(document.getElementsByClassName('score-player2'));
+
+// responible for drawing objects in canvas and interface
 var view = {
     objects: [],
     register: function (gameObject) {
-        this.objects.push(gameObject);
+        if (this.objects.indexOf(gameObject) === -1) {
+            this.objects.push(gameObject);
+        }
+    },
+    unRegister: function (gameObject) {
+        var index = this.objects.indexOf(gameObject);
+        if (index > -1) {
+            this.objects.splice(index, 1);
+        }
     },
     drawObjects: function () {
         this.clearCanvas();
-        this.objects.forEach(function (el, index) {
+        this.objects.forEach(function (el) {
             this.drawObject(el);
         }, this);
     },
-    clearObject: function (gameObject) {
+    drawBonus: function (bonus) {
         ctx.beginPath();
-        ctx.arc(gameObject.x, gameObject.y, gameObject.radius + 1, 0, 2 * Math.PI, false);
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = bonus.color;
+        ctx.arc(bonus.x, bonus.y, bonus.radius, 0, 2 * Math.PI, false);
         ctx.fill();
-    },
+        ctx.fillStyle = 'black';
+        var words = bonus.text.split(' ');
+        ctx.fillText(words[0], bonus.x, bonus.y - 5);
+        ctx.fillText(words[1], bonus.x, bonus.y + 17);
 
-    drawRect: function (x, y, width, height) {
-        ctx.fillRect(x, y, width, height);
     },
     drawObject: function (gameObject) {
-        ctx.beginPath();
-        ctx.arc(gameObject.x, gameObject.y, gameObject.radius, 0, 2 * Math.PI, false);
         ctx.fillStyle = gameObject.color;
-        ctx.fill();
+        if (gameObject instanceof BonusBox) {
+            this.drawBonus(gameObject);
+        } else {
+            ctx.beginPath();
+            ctx.arc(gameObject.x, gameObject.y, gameObject.radius, 0, 2 * Math.PI, false);
+            ctx.fill();
+        }
     },
     clearCanvas: function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     },
-    clearRect: function (x, y, width, height) {
-        ctx.clearRect(x, y, width, height);
-    },
     drawScore: function (player1Score, player2Score) {
-        document.getElementById('score-player1').textContent = player1Score;
-        document.getElementById('score-player2').textContent = player2Score;
+        player1Scores.forEach(function (el) {
+            el.textContent = player1Score;
+        });
+        player2Scores.forEach(function (el) {
+            el.textContent = player2Score;
+        });
+    },
+    showPopup: function (popup) {
+        popup.classList.remove('none');
+    },
+    hidePopup: function (popup) {
+        popup.classList.add('none');
+    },
+    togglePopup: function (popup) {
+        popup.classList.toggle('none');
+    },
+
+    // check if on the screen visible popups
+    isPopupsOnScreen: function () {
+        var res = false;
+        for (var el in popup) {
+            if (window.getComputedStyle(popup[el]).display !== 'none') {
+                res = true;
+                break;
+            }
+        }
+        return res;
+    },
+    resetScore: function () {
+        this.drawScore(0, 0);
     }
 }

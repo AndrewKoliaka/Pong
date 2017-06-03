@@ -1,3 +1,7 @@
+body {
+    font-family: sans-serif;
+}
+
 canvas {
     position: absolute;
     top: 0;
@@ -11,4 +15,55 @@ canvas {
     background-position: 50%;
     background-repeat: repeat-x;
     background-size: 1px auto;
+    z-index: 1;
+}
+
+.popup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    padding: 10px;
+    border: thin solid gray;
+    box-shadow: 3px 3px 3px gray;
+    width: 250px;
+    height: 250px;
+    margin: auto;
+    z-index: 9999;
+    display: table;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.align-left {
+    text-align: left;
+}
+
+#score-popup {
+    width: 100px;
+    height: 100px;
+    background-color: whitesmoke;
+    text-align: center;
+    justify-content: center;
+}
+
+#score-popup h1 {
+    display: inline-block;
+}
+
+.wrapper {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.none {
+    display: none;
+}
+
+.flex {
+    display: flex;
 }

@@ -30,18 +30,18 @@ describe('game suite', function() {
         spyOn(game, 'gameOver');
 
         ball.y = canvas.height + 10;
-        game.checkForClash();
+        game.handleCollision();
         expect(game.gameOver).toHaveBeenCalled();
         expect(ai.score).toEqual(1);
         ball.y = -10;
-        game.checkForClash();
+        game.handleCollision();
         expect(game.gameOver).toHaveBeenCalled();
         expect(player.score).toEqual(1);
     });
 
     it('should change ball direction when clash', function() {
         ball.x = canvas.width;
-        game.checkForClash();
+        game.handleCollision();
         expect(ball.changeDirection).toHaveBeenCalledWith({});
         ball.x = 0;
         expect(ball.changeDirection).toHaveBeenCalledWith({});
@@ -50,14 +50,14 @@ describe('game suite', function() {
         player.y = 100;
         ball.x = 35;
         ball.y = 100 - ball.height;
-        game.checkForClash();
+        game.handleCollision();
         expect(ball.changeDirection).toHaveBeenCalledWith(player)
             //check for clash with ai
         ai.x = 30;
         ai.y = 10;
         ball.x = 35;
         ball.y = 15;
-        game.checkForClash();
+        game.handleCollision();
         expect(ball.changeDirection).toHaveBeenCalledWith(ai)
     });
 
