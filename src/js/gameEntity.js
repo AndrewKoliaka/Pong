@@ -1,3 +1,5 @@
+'use strict';
+
 // base class for all entities in the game
 function GameEntity(props) {
     props = props || {};

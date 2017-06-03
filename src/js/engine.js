@@ -1,3 +1,5 @@
+'use strict';
+
 // object which does all calculations
 var engine = {
     // return angle between player center and ball center
@@ -34,17 +36,17 @@ var engine = {
     // 0: x coordinate of center of circle
     // radius: radius of circle
     // angle: angle for move
-    getBallAX(radius, angle) {
+    getBallAX: function (radius, angle) {
         return 0 + radius * this.getCos(angle);
     },
 
     // calculates INVERSE y coordinate of point on circle with center in (0;0);
-    getBallAY(radius, angle) {
+    getBallAY: function (radius, angle) {
         return -(0 + radius * this.getSin(angle));
     },
 
     // return random number between min and max
-    getRandomNumber(min, max) {
+    getRandomNumber: function (min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-}
+};

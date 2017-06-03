@@ -1,3 +1,5 @@
+'use strict';
+
 // Effect class
 function Effect(type) {
     this.type = type || null;
@@ -43,7 +45,7 @@ Effect.prototype.resolve = function () {
             }
             break;
     }
-}
+};
 
 // removes applied effect
 Effect.prototype.remove = function () {
@@ -74,4 +76,4 @@ Effect.prototype.remove = function () {
             break;
     }
     clearTimeout(this.timer);
-}
+};

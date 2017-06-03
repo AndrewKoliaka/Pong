@@ -1,3 +1,5 @@
+'use strict';
+
 // BonusBox class
 function BonusBox(x, y, type) {
     GameEntity.apply(this, [{
@@ -36,10 +38,10 @@ BonusBox.prototype.remove = function () {
     view.unRegister(this);
     clearTimeout(this.timer);
     game.bonusBoxes.removeElement(this);
-}
+};
 
 // calls when ball kick the bonus 
 BonusBox.prototype.open = function () {
     this.effect.resolve();
     this.remove();
-}
+};

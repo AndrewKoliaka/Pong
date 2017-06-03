@@ -1,3 +1,5 @@
+'use strict';
+
 // Player class
 function Player(props) {
     props = props || {};
@@ -34,12 +36,12 @@ Player.prototype.move = function () {
         }
     }
     view.drawObjects();
-}
+};
 
 // detect if player is moving
 Player.prototype.isMoving = function () {
     return this.goLeft || this.goRight || this.goDown || this.goUp;
-}
+};
 
 // set direction for player platform
 Player.prototype.setDirection = function (dir) {
@@ -61,4 +63,4 @@ Player.prototype.setDirection = function (dir) {
             this.goRight = false;
             break;
     }
-}
+};

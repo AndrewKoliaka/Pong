@@ -1,3 +1,5 @@
+'use strict';
+
 // Ball class
 function Ball(props) {
     props = props || {};
@@ -15,14 +17,14 @@ Ball.prototype.constructor = Ball;
 Ball.prototype.move = function () {
     this.x += this.aX;
     this.y += this.aY;
-}
+};
 
 // set direction of ball based on random angle
 Ball.prototype.setRandomDirection = function () {
     var randomAngle = engine.getRandomNumber(1, 360);
     this.aX = engine.getBallAX(this.speed, randomAngle);
     this.aY = engine.getBallAY(this.speed, randomAngle);
-}
+};
 
 // this method is caused during each cycle passage
 // handles all possible collisions with ball
@@ -56,7 +58,7 @@ Ball.prototype.handleCollision = function () {
             game.gameOver();
             break;
     }
-}
+};
 
 // check if ball got clash with something
 // and if true detect it collision object and type
@@ -66,36 +68,29 @@ Ball.prototype.getCollisionObject = function () {
 
     var self = this;
 
-    // detects if ball is inside of circle
-    function isBallInsideCircle(circleObject) {
-        var FLEXURE = 25;
-        return Math.pow((circleObject.x - this.x), 2) + Math.pow((circleObject.y - this.y), 2) <=
-            Math.pow(circleObject.radius, 2) + Math.pow(this.radius, 2) + Math.pow(FLEXURE, 2);
-    }
-
     // if opponet side (goal)
     if (this.y > canvas.height || this.y < 0) {
         type = collisionObject.OPPONENT_SIDE;
         payload = this.y < 0 ? player1 : player2;
 
         // if player1 platform
-    } else if (isBallInsideCircle.call(this, player1)) {
+    } else if (this.isInsideCircle(player1)) {
         type = collisionObject.PLAYER;
         payload = player1;
 
         // if player2 platform
-    } else if (isBallInsideCircle.call(this, player2)) {
+    } else if (this.isInsideCircle(player2)) {
         type = collisionObject.PLAYER;
         payload = player2;
 
         // if bonus box
     } else if (game.bonusBoxes.some(function (el) {
-            return isBallInsideCircle.call(self, el);
+            return self.isInsideCircle(el);
         })) {
         type = collisionObject.BONUS_BOX;
         payload = game.bonusBoxes.find(function (el) {
-            return isBallInsideCircle.call(self, el);
-        })
+            return self.isInsideCircle(el);
+        });
 
         // if right border
     } else if (this.x + this.radius >= canvas.width) {
@@ -109,9 +104,16 @@ Ball.prototype.getCollisionObject = function () {
     return {
         type: type,
         payload: payload
-    }
-}
+    };
+};
+
+// detects if ball is inside of circle
+Ball.prototype.isInsideCircle = function (circleObject) {
+    var FLEXURE = 25;
+    return Math.pow((circleObject.x - this.x), 2) + Math.pow((circleObject.y - this.y), 2) <=
+        Math.pow(circleObject.radius, 2) + Math.pow(this.radius, 2) + Math.pow(FLEXURE, 2);
+};
 
 Ball.prototype.speedUp = function () {
     this.speed += 0.3;
-}
+};

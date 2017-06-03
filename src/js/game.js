@@ -1,3 +1,5 @@
+'use strict';
+
 // game object
 // it is controller of the game
 // program starts from init method
@@ -93,7 +95,7 @@ var game = {
             color: color.BALL
         });
 
-        this.objectsToMove.push(player1, player2, ball)
+        this.objectsToMove.push(player1, player2, ball);
         canvas = document.getElementsByTagName('canvas')[0];
         ctx = canvas.getContext('2d');
         ctx.font = '20px Arial';
@@ -158,4 +160,4 @@ var game = {
         player1.score = 0;
         player2.score = 0;
     }
-}
+};

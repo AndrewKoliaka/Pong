@@ -1,3 +1,5 @@
+'use strict';
+
 var player1Scores = Array.prototype.slice.call(document.getElementsByClassName('score-player1')),
     player2Scores = Array.prototype.slice.call(document.getElementsByClassName('score-player2'));
 
@@ -84,4 +86,4 @@ var view = {
     resetScore: function () {
         this.drawScore(0, 0);
     }
-}
+};

@@ -1,3 +1,5 @@
+'use strict';
+
 var canvas = null,
     ctx = null;
 
@@ -11,14 +13,14 @@ var player1Keys = {
     UP: 87,
     LEFT: 65,
     RIGHT: 68
-}
+};
 
 var player2Keys = {
     DOWN: 40,
     UP: 38,
     LEFT: 37,
     RIGHT: 39
-}
+};
 
 var SPACE_KEY = 32;
 
@@ -27,28 +29,28 @@ var direction = {
     DOWN: 'DOWN',
     LEFT: 'LEFT',
     RIGHT: 'RIGHT'
-}
+};
 
 var color = {
     PLAYER_1: 'green',
     PLAYER_2: 'red',
     BONUS_BOX: 'skyblue',
     BALL: 'black'
-}
+};
 
 var gameState = {
     ABOUT: 'ABOUT',
     PAUSE: 'PAUSE',
     PLAY: 'PLAY',
     FINISHED: 'FINISHED'
-}
+};
 
 var bonusBoxType = {
     MOVEMENT_SPEED: 'MOVEMENT_SPEED',
     FAST_BALL: 'FAST_BALL',
     MORE_BALLS: 'MORE_BALLS',
     BIG_PLAYER: 'BIG_PLAYER'
-}
+};
 
 var collisionObject = {
     BORDER_RIGHT: 'BORDER_RIGHT',
@@ -56,22 +58,22 @@ var collisionObject = {
     BONUS_BOX: 'BONUS_BOX',
     PLAYER: 'PLAYER',
     OPPONENT_SIDE: 'OPPONENT_SIDE'
-}
+};
 
 var popup = {
     ABOUT: document.getElementById('about-popup'),
     SCORE: document.getElementById('score-popup'),
     PAUSE: document.getElementById('pause-popup')
-}
+};
 
 // handler for keyDown event
 function keyPressed(e) {
     switch (e.keyCode) {
         case player2Keys.UP:
-            player2.setDirection(direction.UP)
+            player2.setDirection(direction.UP);
             break;
         case player2Keys.DOWN:
-            player2.setDirection(direction.DOWN)
+            player2.setDirection(direction.DOWN);
             break;
         case player2Keys.RIGHT:
             player2.setDirection(direction.RIGHT);
@@ -83,7 +85,7 @@ function keyPressed(e) {
             player1.setDirection(direction.UP);
             break;
         case player1Keys.DOWN:
-            player1.setDirection(direction.DOWN)
+            player1.setDirection(direction.DOWN);
             break;
         case player1Keys.RIGHT:
             player1.setDirection(direction.RIGHT);
@@ -135,7 +137,7 @@ Array.prototype.removeElement = function (el) {
         return true;
     }
     return false;
-}
+};
 
 // occurs when dom and all scripts completely loaded
 window.onload = game.init.bind(game);
