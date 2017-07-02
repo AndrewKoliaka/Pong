@@ -11,6 +11,7 @@ function BonusBox(x, y, type) {
     this.type = type || null;
     this.radius = 40;
     this.text = '';
+    
     // remove bonus box in 20s if it won't be opened
     this.timer = setTimeout(this.remove.bind(this), 20000);
     this.effect = new Effect(type);
