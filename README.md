@@ -3,7 +3,7 @@ javascript tennis game on canvas
 
 Try it  [demo](http://andrewkoliaka.github.io/tennis/)
 
-![](./screen.png)
+<img src="./screen.png" height="500">
 
 ## Quick start
 ```
